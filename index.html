@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Tài Xỉu ( Người Lập Trình : Hon )</title>
+    <title>Tài Xỉu và Lắc Xí Ngầu</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -95,6 +95,11 @@
     <input type="number" id="depositAmount" placeholder="Nhập số tiền nạp">
     <button onclick="deposit()">Nạp tiền</button>
 
+    <h3>Rút tiền</h3>
+    <input type="number" id="withdrawAmount" placeholder="Nhập số tiền rút">
+    <button onclick="withdraw()">Rút tiền</button>
+    <div id="withdrawResult"></div>
+
     <script>
         let balance = 1000000;
 
@@ -160,6 +165,18 @@
                 document.getElementById("result").textContent = `Bạn đã nạp ${formatBalance(depositAmount)} VND. Số dư mới: ${formatBalance(balance)} VND.`;
             } else {
                 document.getElementById("result").textContent = "Vui lòng nhập số tiền nạp hợp lệ.";
+            }
+        }
+
+        function withdraw() {
+            let withdrawAmount = parseFloat(document.getElementById("withdrawAmount").value);
+            if (withdrawAmount > 0 && withdrawAmount <= balance) {
+                balance -= withdrawAmount;
+                document.getElementById("balance").textContent = formatBalance(balance) + " VND";
+                document.getElementById("withdrawResult").textContent = `Bạn đã rút ${formatBalance(withdrawAmount)} VND.`;
+                document.getElementById("withdrawAmount").value = ""; // Xóa ô nhập
+            } else {
+                document.getElementById("withdrawResult").textContent = "Số tiền rút không hợp lệ.";
             }
         }
     </script>
