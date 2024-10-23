@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Tài Xỉu ( Người Lập Trình : Hon )</title>
+    <title>Game Tài Xỉu (Người Lập Trình: Hon)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,7 +13,7 @@
         }
         .dice {
             display: inline-block;
-            width: 100px; /* Kích thước xí ngầu */
+            width: 100px;
             height: 100px;
             margin: 10px;
             background-color: white;
@@ -21,9 +21,9 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             position: relative;
-            font-size: 48px; /* Kích thước số */
+            font-size: 48px;
             font-weight: bold;
-            line-height: 100px; /* Căn giữa số */
+            line-height: 100px;
             color: #000;
             transition: transform 0.2s, box-shadow 0.2s;
         }
@@ -65,9 +65,8 @@
             padding: 10px 20px;
             margin: 10px;
         }
-        /* Modal styles */
         .modal {
-            display: none; /* Ẩn mặc định */
+            display: none;
             position: fixed;
             z-index: 1;
             left: 0;
@@ -89,6 +88,11 @@
         .modal-content button {
             margin: 5px;
         }
+        #countdown {
+            font-size: 32px;
+            margin-top: 20px;
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -100,6 +104,8 @@
         <div class="dice" id="dice3">1</div>
     </div>
     <div id="diceResult"></div>
+
+    <div id="countdown">30</div>
 
     <p>Số tiền cược: <span id="betAmountDisplay">0</span> VND</p>
     <div id="betOptions">
@@ -133,7 +139,6 @@
     <button onclick="withdraw()">Rút tiền</button>
     <div id="withdrawResult"></div>
 
-    <!-- Modal for deposit confirmation -->
     <div id="depositModal" class="modal">
         <div class="modal-content">
             <h2>Xác nhận nạp tiền</h2>
@@ -143,7 +148,6 @@
         </div>
     </div>
 
-    <!-- Modal for verification code -->
     <div id="verificationModal" class="modal">
         <div class="modal-content">
             <h2>Nhập mã xác thực</h2>
@@ -157,15 +161,32 @@
     <script>
         let balance = 1000000;
         let verificationCode = "";
+        let countdownTimer;
+        let countdownValue = 30;
+        let pendingBet = 0; // Biến lưu số tiền cược đã chọn
+        let playerChoice = ''; // Biến lưu lựa chọn của người chơi
+
+        function startCountdown() {
+            countdownValue = 30;
+            document.getElementById("countdown").textContent = countdownValue;
+
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                document.getElementById("countdown").textContent = countdownValue;
+
+                if (countdownValue <= 0) {
+                    clearInterval(countdownTimer);
+                    rollDice();
+                }
+            }, 1000);
+        }
 
         function formatBalance(value) {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
         function formatInput(input) {
-            // Xóa tất cả ký tự không phải số
             let value = input.value.replace(/\D/g, '');
-            // Định dạng với dấu chấm
             input.value = formatBalance(value);
         }
 
@@ -176,49 +197,56 @@
             }
             document.getElementById("betAmount").value = amount;
             document.getElementById("betAmountDisplay").textContent = formatBalance(amount);
+            pendingBet = amount; // Lưu cược đã chọn
         }
 
         function playGame(choice) {
-            let betAmount = parseFloat(document.getElementById("betAmount").value.replace(/\./g, '')) || 0;
-
-            if (betAmount <= 0 || betAmount > balance) {
+            if (pendingBet <= 0 || pendingBet > balance) {
                 document.getElementById("result").textContent = "Vui lòng nhập số tiền cược hợp lệ.";
                 return;
             }
 
-            // Lắc xí ngầu
+            playerChoice = choice; // Lưu lựa chọn
+            document.getElementById("result").textContent = `Bạn đã chọn: ${choice}. Vui lòng chờ kết quả...`;
+            // Không khởi động lại đếm ngược
+        }
+
+        function rollDice() {
             let totalScore = 0;
+
             for (let i = 1; i <= 3; i++) {
                 let diceValue = Math.floor(Math.random() * 6) + 1;
                 document.getElementById(`dice${i}`).textContent = diceValue; // Cập nhật số trên xí ngầu
                 totalScore += diceValue;
             }
 
-            // Xử lý kết quả cược
             let result = "";
             let winnings = 0;
 
             if (totalScore >= 3 && totalScore <= 10) {
                 result = "Xỉu";
-                if (choice === "Xỉu") {
-                    winnings = betAmount * 0.99;
+                if (playerChoice === "Xỉu") {
+                    winnings = pendingBet * 0.99;
                     balance += winnings;
                 } else {
-                    balance -= betAmount;
+                    balance -= pendingBet;
                 }
             } else if (totalScore >= 11 && totalScore <= 18) {
                 result = "Tài";
-                if (choice === "Tài") {
-                    winnings = betAmount * 0.99;
+                if (playerChoice === "Tài") {
+                    winnings = pendingBet * 0.99;
                     balance += winnings;
                 } else {
-                    balance -= betAmount;
+                    balance -= pendingBet;
                 }
             }
 
             document.getElementById("balance").textContent = formatBalance(balance) + " VND";
             document.getElementById("diceResult").textContent = `Tổng điểm: ${totalScore} - Kết quả: ${result}.`;
             document.getElementById("result").textContent = `Bạn đã nhận: ${formatBalance(winnings)} VND. Số dư mới: ${formatBalance(balance)} VND.`;
+
+            pendingBet = 0; // Reset cược đã chọn
+            startCountdown(); // Bắt đầu lượt mới
         }
 
         function openModal() {
@@ -259,7 +287,7 @@
 
         function verifyCode() {
             let enteredCode = document.getElementById("verificationCode").value;
-            let correctCode = verificationCode.charAt(0) + verificationCode.charAt(2) + verificationCode.charAt(3) + verificationCode.charAt(5); // 1 ký tự đầu, 2 ký tự giữa và 1 ký tự cuối
+            let correctCode = verificationCode.charAt(0) + verificationCode.charAt(2) + verificationCode.charAt(3) + verificationCode.charAt(5);
 
             if (enteredCode === correctCode) {
                 let depositAmount = parseFloat(document.getElementById("depositAmount").value.replace(/\./g, ''));
@@ -284,6 +312,8 @@
                 document.getElementById("withdrawResult").textContent = "Số tiền rút không hợp lệ.";
             }
         }
+
+        startCountdown(); // Bắt đầu lần đầu tiên
     </script>
 </body>
 </html>
