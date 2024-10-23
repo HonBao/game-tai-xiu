@@ -8,62 +8,67 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            padding: 20px;
-            background-color: #f8f9fa;
+            padding: 10px;
+            background-color: #343a40; /* Màu nền tối */
+            margin: 0;
+            color: #ff8c00; /* Màu chữ cam */
+        }
+        h1, h2 {
+            margin: 10px 0;
+            color: #ff8c00; /* Màu chữ cam cho tiêu đề */
         }
         .dice {
             display: inline-block;
-            width: 100px;
-            height: 100px;
-            margin: 10px;
-            background-color: white;
-            border: 2px solid #000;
+            width: 80px;
+            height: 80px;
+            margin: 5px;
+            background-color: #ffffff; /* Nền xí ngầu vẫn là màu trắng */
+            border: 2px solid #ff8c00; /* Viền xí ngầu màu cam */
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-            font-size: 48px;
-            font-weight: bold;
-            line-height: 100px;
-            color: #000;
+            font-size: 32px;
+            line-height: 80px;
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .dice:hover {
             transform: translateY(-5px) scale(1.1);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
-        #result, #diceResult, #withdrawResult {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        .bet-button {
-            font-size: 18px;
-            padding: 10px 15px;
+        .button {
+            font-size: 16px;
+            padding: 8px 12px;
             margin: 5px;
-            border: 1px solid #000;
+            border: 1px solid #ff8c00; /* Viền nút màu cam */
             border-radius: 5px;
-            cursor: pointer;
-            background-color: #f0f0f0;
+            background-color: #495057; /* Màu nền nút tối */
+            color: #ff8c00; /* Màu chữ nút cam */
             transition: background-color 0.3s;
-            display: inline-block;
+            cursor: pointer;
         }
-        .bet-button:hover {
-            background-color: #d9d9d9;
+        .button:hover {
+            background-color: #6c757d; /* Màu nền nút khi hover */
         }
-        #allIn {
-            font-weight: bold;
-            color: green;
+        #countdown {
+            font-size: 24px;
+            margin: 10px 0;
+            color: #ff8c00; /* Màu chữ cam */
         }
-        #betOptions {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-        input, button {
+        #result, #diceResult, #withdrawResult {
             font-size: 18px;
-            padding: 10px 20px;
-            margin: 10px;
+            margin-top: 10px;
+            color: #ff8c00; /* Màu chữ cam */
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc; /* Viền input màu xám */
+            border-radius: 5px;
+            background-color: #495057; /* Nền input tối */
+            color: #ff8c00; /* Màu chữ input cam */
+        }
+        input::placeholder {
+            color: #ff8c00; /* Màu chữ placeholder cam */
         }
         .modal {
             display: none;
@@ -77,21 +82,23 @@
             background-color: rgba(0, 0, 0, 0.4);
         }
         .modal-content {
-            background-color: #fefefe;
+            background-color: #495057; /* Nền modal tối */
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
             max-width: 400px;
             text-align: center;
+            color: #ff8c00; /* Màu chữ modal cam */
         }
         .modal-content button {
             margin: 5px;
         }
-        #countdown {
-            font-size: 32px;
-            margin-top: 20px;
-            color: red;
+        .bet-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -104,27 +111,28 @@
         <div class="dice" id="dice3">1</div>
     </div>
     <div id="diceResult"></div>
+    <div id="waitingMessage" style="display: none;">Vui lòng chờ kết quả...</div>
 
     <div id="countdown">30</div>
 
     <p>Số tiền cược: <span id="betAmountDisplay">0</span> VND</p>
-    <div id="betOptions">
-        <div class="bet-button" onclick="setBet(10000)">10.000</div>
-        <div class="bet-button" onclick="setBet(20000)">20.000</div>
-        <div class="bet-button" onclick="setBet(50000)">50.000</div>
-        <div class="bet-button" onclick="setBet(100000)">100.000</div>
-        <div class="bet-button" onclick="setBet(500000)">500.000</div>
-        <div class="bet-button" onclick="setBet(1000000)">1.000.000</div>
-        <div class="bet-button" onclick="setBet(5000000)">5.000.000</div>
-        <div class="bet-button" onclick="setBet(10000000)">10.000.000</div>
-        <div class="bet-button" id="allIn" onclick="setBet(balance)">All In</div>
+    <div class="bet-container">
+        <div class="button" onclick="setBet(10000)">10.000</div>
+        <div class="button" onclick="setBet(20000)">20.000</div>
+        <div class="button" onclick="setBet(50000)">50.000</div>
+        <div class="button" onclick="setBet(100000)">100.000</div>
+        <div class="button" onclick="setBet(500000)">500.000</div>
+        <div class="button" onclick="setBet(1000000)">1.000.000</div>
+        <div class="button" onclick="setBet(5000000)">5.000.000</div>
+        <div class="button" onclick="setBet(10000000)">10.000.000</div>
+        <div class="button" id="allIn" onclick="setBet(balance)">All In</div>
     </div>
     
     <input type="hidden" id="betAmount" value="0">
     
     <p>Chọn: 
-        <button onclick="playGame('Tài')">Tài</button>
-        <button onclick="playGame('Xỉu')">Xỉu</button>
+        <button class="button" id="chooseTai" onclick="playGame('Tài')">Tài</button>
+        <button class="button" id="chooseXiu" onclick="playGame('Xỉu')">Xỉu</button>
     </p>
     
     <div id="result"></div>
@@ -132,19 +140,19 @@
     <p>Số dư: <span id="balance">1.000.000</span> VND</p>
     
     <input type="text" id="depositAmount" placeholder="Nhập số tiền nạp" oninput="formatInput(this)">
-    <button onclick="openModal()">Nạp tiền</button>
+    <button class="button" onclick="openModal()">Nạp tiền</button>
 
     <h3>Rút tiền</h3>
     <input type="text" id="withdrawAmount" placeholder="Nhập số tiền rút" oninput="formatInput(this)">
-    <button onclick="withdraw()">Rút tiền</button>
+    <button class="button" onclick="withdraw()">Rút tiền</button>
     <div id="withdrawResult"></div>
 
     <div id="depositModal" class="modal">
         <div class="modal-content">
             <h2>Xác nhận nạp tiền</h2>
             <p>Số tiền nạp: <span id="confirmDepositAmount">0</span> VND</p>
-            <button onclick="confirmDeposit()">Xác nhận</button>
-            <button onclick="closeModal()">Hủy</button>
+            <button class="button" onclick="confirmDeposit()">Xác nhận</button>
+            <button class="button" onclick="closeModal()">Hủy</button>
         </div>
     </div>
 
@@ -153,8 +161,8 @@
             <h2>Nhập mã xác thực</h2>
             <p>Mã xác thực: <span id="generatedCode"></span></p>
             <input type="text" id="verificationCode" placeholder="Nhập mã xác thực">
-            <button onclick="verifyCode()">Xác nhận</button>
-            <button onclick="closeVerificationModal()">Hủy</button>
+            <button class="button" onclick="verifyCode()">Xác nhận</button>
+            <button class="button" onclick="closeVerificationModal()">Hủy</button>
         </div>
     </div>
 
@@ -163,12 +171,14 @@
         let verificationCode = "";
         let countdownTimer;
         let countdownValue = 30;
-        let pendingBet = 0; // Biến lưu số tiền cược đã chọn
-        let playerChoice = ''; // Biến lưu lựa chọn của người chơi
+        let pendingBet = 0; 
+        let playerChoice = ''; 
+        let betLocked = false; 
 
         function startCountdown() {
             countdownValue = 30;
             document.getElementById("countdown").textContent = countdownValue;
+            document.getElementById("waitingMessage").style.display = "block"; 
 
             countdownTimer = setInterval(() => {
                 countdownValue--;
@@ -191,13 +201,18 @@
         }
 
         function setBet(amount) {
+            if (betLocked) {
+                alert("Bạn không thể thay đổi số tiền cược sau khi đã chọn cược.");
+                return;
+            }
+
             if (amount > balance) {
                 alert("Số tiền cược không được vượt quá số dư.");
                 return;
             }
             document.getElementById("betAmount").value = amount;
             document.getElementById("betAmountDisplay").textContent = formatBalance(amount);
-            pendingBet = amount; // Lưu cược đã chọn
+            pendingBet = amount; 
         }
 
         function playGame(choice) {
@@ -206,9 +221,20 @@
                 return;
             }
 
-            playerChoice = choice; // Lưu lựa chọn
-            document.getElementById("result").textContent = `Bạn đã chọn: ${choice}. Vui lòng chờ kết quả...`;
-            // Không khởi động lại đếm ngược
+            if (playerChoice !== '') {
+                document.getElementById("result").textContent = "Bạn đã chọn cược rồi. Không thể thay đổi.";
+                return;
+            }
+
+            playerChoice = choice; 
+            betLocked = true; 
+
+            document.getElementById("result").textContent = `Bạn đã chọn: ${choice}.`; 
+
+            document.getElementById("chooseTai").disabled = true;
+            document.getElementById("chooseXiu").disabled = true;
+
+            startCountdown(); 
         }
 
         function rollDice() {
@@ -216,7 +242,7 @@
 
             for (let i = 1; i <= 3; i++) {
                 let diceValue = Math.floor(Math.random() * 6) + 1;
-                document.getElementById(`dice${i}`).textContent = diceValue; // Cập nhật số trên xí ngầu
+                document.getElementById(`dice${i}`).textContent = diceValue; 
                 totalScore += diceValue;
             }
 
@@ -243,10 +269,19 @@
 
             document.getElementById("balance").textContent = formatBalance(balance) + " VND";
             document.getElementById("diceResult").textContent = `Tổng điểm: ${totalScore} - Kết quả: ${result}.`;
-            document.getElementById("result").textContent = `Bạn đã nhận: ${formatBalance(winnings)} VND. Số dư mới: ${formatBalance(balance)} VND.`;
 
-            pendingBet = 0; // Reset cược đã chọn
-            startCountdown(); // Bắt đầu lượt mới
+            if (pendingBet > 0) {
+                document.getElementById("result").textContent = `Bạn đã chọn: ${playerChoice}. Kết quả là: ${result}. Số tiền thắng cược: ${formatBalance(winnings)} VND.`;
+            }
+
+            document.getElementById("waitingMessage").style.display = "none";
+
+            pendingBet = 0; 
+            playerChoice = ''; 
+            betLocked = false; 
+            document.getElementById("chooseTai").disabled = false; 
+            document.getElementById("chooseXiu").disabled = false; 
+            startCountdown(); 
         }
 
         function openModal() {
@@ -274,7 +309,7 @@
         }
 
         function generateVerificationCode() {
-            return Math.floor(100000 + Math.random() * 900000).toString(); // Tạo mã xác thực 6 chữ số
+            return Math.floor(100000 + Math.random() * 900000).toString(); 
         }
 
         function openVerificationModal() {
@@ -313,7 +348,7 @@
             }
         }
 
-        startCountdown(); // Bắt đầu lần đầu tiên
+        startCountdown(); 
     </script>
 </body>
 </html>
