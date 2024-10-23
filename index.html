@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Tài Xỉu (Người Lập Trình: Hon)</title>
+    <title>Nhà Cái Đến Từ Châu Á</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 10px;
-            background-color: #343a40; /* Màu nền tối */
+            background-color: #343a40; 
             margin: 0;
-            color: #ff8c00; /* Màu chữ cam */
+            color: #ff8c00; 
         }
         h1, h2 {
             margin: 10px 0;
-            color: #ff8c00; /* Màu chữ cam cho tiêu đề */
+            color: #ff8c00; 
         }
         .dice {
             display: inline-block;
             width: 80px;
             height: 80px;
             margin: 5px;
-            background-color: #ffffff; /* Nền xí ngầu vẫn là màu trắng */
-            border: 2px solid #ff8c00; /* Viền xí ngầu màu cam */
+            background-color: #ffffff; 
+            border: 2px solid #ff8c00; 
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             font-size: 32px;
@@ -38,37 +38,38 @@
             font-size: 16px;
             padding: 8px 12px;
             margin: 5px;
-            border: 1px solid #ff8c00; /* Viền nút màu cam */
+            border: 1px solid #ff8c00; 
             border-radius: 5px;
-            background-color: #495057; /* Màu nền nút tối */
-            color: #ff8c00; /* Màu chữ nút cam */
+            background-color: #495057; 
+            color: #ff8c00; 
             transition: background-color 0.3s;
             cursor: pointer;
         }
         .button:hover {
-            background-color: #6c757d; /* Màu nền nút khi hover */
+            background-color: #6c757d; 
         }
         #countdown {
             font-size: 24px;
             margin: 10px 0;
-            color: #ff8c00; /* Màu chữ cam */
+            color: #ff8c00; 
         }
         #result, #diceResult, #withdrawResult {
             font-size: 18px;
             margin-top: 10px;
-            color: #ff8c00; /* Màu chữ cam */
+            color: #ff8c00; 
         }
         input {
             width: calc(100% - 20px);
             padding: 8px;
             margin: 5px 0;
-            border: 1px solid #ccc; /* Viền input màu xám */
+            border: 1px solid #ccc; 
             border-radius: 5px;
-            background-color: #495057; /* Nền input tối */
-            color: #ff8c00; /* Màu chữ input cam */
+            background-color: #495057; 
+            color: #ff8c00; 
+            display: none; /* Ẩn ô nhập tiền */
         }
         input::placeholder {
-            color: #ff8c00; /* Màu chữ placeholder cam */
+            color: #ff8c00; 
         }
         .modal {
             display: none;
@@ -82,17 +83,14 @@
             background-color: rgba(0, 0, 0, 0.4);
         }
         .modal-content {
-            background-color: #495057; /* Nền modal tối */
+            background-color: #495057; 
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
             max-width: 400px;
             text-align: center;
-            color: #ff8c00; /* Màu chữ modal cam */
-        }
-        .modal-content button {
-            margin: 5px;
+            color: #ff8c00; 
         }
         .bet-container {
             display: grid;
@@ -100,11 +98,26 @@
             gap: 10px;
             margin: 20px 0;
         }
+        @media (max-width: 600px) {
+            .dice {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+                line-height: 60px;
+            }
+            .button {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+            #countdown, #result, #diceResult, #withdrawResult {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Nhà Cái Đến Từ Hon Châu Á</h1>
-    <h2>Kết quả Lắc Xí Ngầu</h2>
+    <h1>Nhà Cái Đến Từ Châu Á</h1>
+    <h2>Game Tài Xỉu Mini</h2>
     <div id="diceContainer">
         <div class="dice" id="dice1">1</div>
         <div class="dice" id="dice2">1</div>
@@ -139,12 +152,14 @@
     
     <p>Số dư: <span id="balance">1.000.000</span> VND</p>
     
+    <button class="button" onclick="openDepositInput()">Nạp tiền</button>
     <input type="text" id="depositAmount" placeholder="Nhập số tiền nạp" oninput="formatInput(this)">
-    <button class="button" onclick="openModal()">Nạp tiền</button>
 
-    <h3>Rút tiền</h3>
+    <button class="button" onclick="openWithdrawInput()">Rút tiền</button>
     <input type="text" id="withdrawAmount" placeholder="Nhập số tiền rút" oninput="formatInput(this)">
-    <button class="button" onclick="withdraw()">Rút tiền</button>
+
+    <button class="button" onclick="showBetHistory()">Lịch sử Cược</button>
+
     <div id="withdrawResult"></div>
 
     <div id="depositModal" class="modal">
@@ -165,6 +180,14 @@
             <button class="button" onclick="closeVerificationModal()">Hủy</button>
         </div>
     </div>
+    
+    <div id="betHistoryModal" class="modal">
+        <div class="modal-content">
+            <h2>Lịch sử Cược</h2>
+            <div id="betHistory"></div>
+            <button class="button" onclick="closeBetHistoryModal()">Đóng</button>
+        </div>
+    </div>
 
     <script>
         let balance = 1000000;
@@ -174,6 +197,7 @@
         let pendingBet = 0; 
         let playerChoice = ''; 
         let betLocked = false; 
+        let betHistory = []; // Lưu lịch sử cược
 
         function startCountdown() {
             countdownValue = 30;
@@ -267,6 +291,16 @@
                 }
             }
 
+            // Lưu lịch sử cược chỉ nếu có đặt cược
+            if (pendingBet > 0) {
+                betHistory.push({
+                    choice: playerChoice,
+                    score: totalScore,
+                    result: result,
+                    winnings: winnings
+                });
+            }
+
             document.getElementById("balance").textContent = formatBalance(balance) + " VND";
             document.getElementById("diceResult").textContent = `Tổng điểm: ${totalScore} - Kết quả: ${result}.`;
 
@@ -284,18 +318,14 @@
             startCountdown(); 
         }
 
-        function openModal() {
-            let depositAmount = parseFloat(document.getElementById("depositAmount").value.replace(/\./g, ''));
-            if (depositAmount > 0) {
-                document.getElementById("confirmDepositAmount").textContent = formatBalance(depositAmount);
-                document.getElementById("depositModal").style.display = "block";
-            } else {
-                alert("Vui lòng nhập số tiền nạp hợp lệ.");
-            }
+        function openDepositInput() {
+            document.getElementById("depositAmount").style.display = "block"; // Hiển thị ô nhập tiền nạp
+            document.getElementById("withdrawAmount").style.display = "none"; // Ẩn ô nhập tiền rút
         }
 
-        function closeModal() {
-            document.getElementById("depositModal").style.display = "none";
+        function openWithdrawInput() {
+            document.getElementById("withdrawAmount").style.display = "block"; // Hiển thị ô nhập tiền rút
+            document.getElementById("depositAmount").style.display = "none"; // Ẩn ô nhập tiền nạp
         }
 
         function confirmDeposit() {
@@ -305,7 +335,7 @@
                 document.getElementById("generatedCode").textContent = verificationCode;
                 openVerificationModal();
             }
-            closeModal();
+            document.getElementById("depositAmount").style.display = "none"; // Ẩn ô nhập sau khi xác nhận
         }
 
         function generateVerificationCode() {
@@ -343,9 +373,29 @@
                 document.getElementById("balance").textContent = formatBalance(balance) + " VND";
                 document.getElementById("withdrawResult").textContent = `Bạn đã rút ${formatBalance(withdrawAmount)} VND.`;
                 document.getElementById("withdrawAmount").value = "";
+                document.getElementById("withdrawAmount").style.display = "none"; // Ẩn ô nhập sau khi rút
             } else {
                 document.getElementById("withdrawResult").textContent = "Số tiền rút không hợp lệ.";
             }
+        }
+
+        function showBetHistory() {
+            let historyContainer = document.getElementById("betHistory");
+            historyContainer.innerHTML = ''; // Xóa nội dung cũ
+
+            if (betHistory.length === 0) {
+                historyContainer.innerHTML = '<p>Chưa có lịch sử cược nào.</p>';
+            } else {
+                betHistory.forEach((bet, index) => {
+                    historyContainer.innerHTML += `<p>Cược ${index + 1}: Chọn ${bet.choice}, Tổng điểm ${bet.score}, Kết quả: ${bet.result}, Tiền thắng: ${formatBalance(bet.winnings)} VND</p>`;
+                });
+            }
+
+            document.getElementById("betHistoryModal").style.display = "block";
+        }
+
+        function closeBetHistoryModal() {
+            document.getElementById("betHistoryModal").style.display = "none";
         }
 
         startCountdown(); 
